@@ -11,6 +11,7 @@
 <script>
 export default {
   name: "TabControl",
+  // 从外面往里面传入数据
   props: {
     titles: {
       type: Array,
@@ -27,6 +28,8 @@ export default {
   methods: {
     itemclick(index) {  // 传入index,因为要赋值到最新的index
       this.currentIndex = index;
+      // $emit 从里面往外面传出数据  index 告诉我们点击了谁
+      this.$emit('tabClick',index)
     }
   }
 }
