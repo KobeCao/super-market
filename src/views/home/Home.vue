@@ -7,8 +7,7 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
-            :pull-up-load="true"
-            @pullingUp="loadMore">
+            :pull-up-load="true">
       <!-- 轮播图 -->
     <home-swiper :banners="banners"></home-swiper>
     <!-- 推荐信息 -->
@@ -83,10 +82,16 @@ export default {
   created() {
     // 1. 请求多个数据,异步操作
     this.getHomeMultidata()
-    //2. 请求商品数据 传入对应的类型
+    // 2. 请求商品数据 传入对应的类型
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+  },
+  mounted() {
+    // 3.监听item中图片加载完成
+    this.$bus.$on('itemImageLoad',() => {
+      this.$refs.scroll.refresh()
+    })
   },
   methods: {
     /**
@@ -111,19 +116,15 @@ export default {
     contentScroll(position) { //显示隐藏箭头栏
     // 将传过来的position的值里面的x和y 坐标来进行判断
       this.isShowBackTop = (-position.y) > 1000
+    },
 
-    },
-    loadMore() { // 上拉加载更多
-    // currentType表示正在记录着pop/new/sell这三个类型。只需要将currentType传到getHomeGoods()里面，
-      this.getHomeGoods(this.currentType)
-    },
     /**
      * 网络请求相关的方法
      */
     getHomeMultidata() {
       getHomeMultidata().then((res) => {
         // 通过res拿到请求的结果
-        console.log(res);
+        // console.log(res);
         // this.result = res;
         // this在箭头函数里面往上找作用域,created()里面有this,所以箭头函数里面this找到的就是created里面的this,而created里面的
         // 的this就是当前组件的对象。所以： this.result拿到的就是data()里面的result。
@@ -145,8 +146,6 @@ export default {
         this.goods[type].list.push(...res.data.list)
         // 更新页码
         this.goods[type].page += 1
-
-        this.$refs.scroll.finishPullUp()
       });
     }
   }
