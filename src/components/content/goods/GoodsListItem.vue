@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemCilck">
     <!-- 商品图片 -->
     <img :src="goodsItem.show.img" alt="" @load="imagLoad">
     <div class="goods-info">
@@ -28,6 +28,9 @@ export default {
       // 通过$emit发射出去itemImageLoad事件,因为$bus为空，所以通过原型给$bus赋值一个Vue实例，因为Vue实例是可以作为我们事件总线的
       // 此时$bus就是一个Vues实例，就可以用new出来的Vue实例发射事件，并且也可以用new出来的Vue实例监听事件。
       this.$bus.$emit('itemImageLoad')
+    },
+    itemCilck() {
+      this.$router.push('/detail/' + this.goodsItem.iid)
     }
   }
 }

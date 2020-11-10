@@ -3,7 +3,7 @@
       <swiper-item v-for="item in banners" :key="item.index">
         <!--因为SwperItem预留了插条，所以将在banners里面取出的数据插入里面 -->
          <a :href="item.link">
-           <img :src="item.image" alt="">
+           <img :src="item.image" alt="" @load="imageLoad">
          </a>
       </swiper-item>
     </swiper>
@@ -24,9 +24,22 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      isLoad: false
+    }
+  },
   components:{
     Swiper,
     SwiperItem
+  },
+  methods: {
+    imageLoad() {  // 让只执行发出一次事件
+      if(!this.isLoad) {
+        this.$emit('swiperImageLoad')
+        this.isLoad = true
+      }
+    }
   }
 }
 </script>
