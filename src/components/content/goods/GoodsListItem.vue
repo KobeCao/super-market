@@ -1,7 +1,7 @@
 <template>
-  <div class="goods-item" @click="itemCilck">
+  <div class="goodsItem.show.img" @click="itemCilck">
     <!-- 商品图片 -->
-    <img :src="goodsItem.show.img" alt="" @load="imagLoad">
+    <img :src="goodsItem" alt="" @load="imagLoad">
     <div class="goods-info">
       <!-- 商品描述 -->
       <p>{{goodsItem.title}}</p>
@@ -29,8 +29,8 @@ export default {
       // 此时$bus就是一个Vues实例，就可以用new出来的Vue实例发射事件，并且也可以用new出来的Vue实例监听事件。
       this.$bus.$emit('itemImageLoad')
     },
-    itemCilck() {
-      this.$router.push('/detail/' + this.goodsItem.iid)
+    itemClick() {
+      console.log(this.goodsItem.iid);
     }
   }
 }
