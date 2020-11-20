@@ -4,23 +4,28 @@
     <div v-if="!isActive"><slot name="item-icon"></slot></div>
     <!-- 活跃的时候展示 -->
     <div v-else><slot name="item-icon-active"></slot></div>
-    <!-- 动态绑定class,当为true的时候是class,当是false时，不绑定 -->
-    <div :class="{active: isActive}"><slot name="item-text"></slot></div>
-
-    <!-- <img src="../../assets/img/tabbar/home.svg" alt="" />
-        <div>首页</div> -->
+    <!-- 动态绑定style,当为true的时候是class,当是false时，不绑定 -->
+    <div :style="activeStyle"><slot name="item-text"></slot></div>
   </div>
 </template>
-
 <script>
 export default {
   name: "TabBarItem",
   props: {
-    path: String
+    path: String,
+    activeColor: {
+      type: String,
+      default: 'red'
+    }
   },
-  data() {
-    return {
-      isActive: true
+  computed: {
+    isActive() {
+      //$route那个路由处于活跃就是那个对象，
+      return this.$route.path.indexOf(this.path) !== -1
+    },
+    // 动态决定颜色
+    activeStyle() {
+      return this.isActive ? {color: this.activeColor} : {}
     }
   },
   methods: {
@@ -31,7 +36,6 @@ export default {
   }
 };
 </script>
-
 <style>
 .tab-bar-item {
   flex: 1;
@@ -45,8 +49,5 @@ export default {
   margin-top: 3px;
   vertical-align: middle;  /* 默认去掉3像素 */
   margin-bottom: 2px;
-}
-.active {
-  color: red;
 }
 </style>
