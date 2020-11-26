@@ -55,11 +55,12 @@ export default {
   position: relative;
 }
 .goods-info .collect::before {
-  content: '';
-  position: absolute;
-  left: -15px;
-  top: -1px;
-  width: 14px;
-  background: url("~assets/img/common/collect.svg") 0 0/14px 14px;
-}
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: -1px;
+    width: 14px;
+    height: 14px;
+    background: url("~assets/img/common/collect.svg") 0 0/14px 14px;
+  }
 </style>
