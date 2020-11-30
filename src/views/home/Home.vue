@@ -1,7 +1,12 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <scroll class="content" ref="scroll">
+    <scroll class="content"
+     ref="scroll"
+     :probe-type="3"
+     @scroll="contentScroll"
+     :pull-up-load="true"
+     @pullingUp="loadMore">
       <!-- 轮播图组件 -->
       <home-swiper :banners="banners"></home-swiper>
       <!-- 推荐信息的展示 -->
@@ -18,7 +23,7 @@
       <!-- 商品数据展示 -->
       <good-list :goods="showGoods"></good-list>
     </scroll>
-    <back-top @click.native="backClick"></back-top>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 <script>
@@ -58,6 +63,7 @@ export default {
         sell: { page: 0, list: [] },
       },
       currentType: "pop",
+      isShowBackTop: false
     };
   },
   computed: {
@@ -73,10 +79,26 @@ export default {
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
   },
+  mounted() {
+    //3.监听item中图片加载完成
+    const refresh = this.debounce(this.$refs.scroll.refresh)
+    this.$bus.$on('itemImageLoad',() => {
+      refresh()
+    })
+  },
   methods: {
     /**
      * 事件监听相关的方法
      */
+    debounce(func,delay) {
+      let timer = null
+      return function(...args) {
+        if(timer) clearTimeout(timer) // 如果timer有值，取消掉
+        timer = setTimeout(() =>{
+          func.apply(this,args)
+        },delay)
+      }
+    },
     tabCilck(index) {
       switch (index) {
         case 0:
@@ -92,6 +114,12 @@ export default {
     },
     backClick() {
       this.$refs.scroll.scrollTo(0,0,500)
+    },
+    contentScroll(position) {
+     this.isShowBackTop = (-position.y) > 1000
+    },
+    loadMore() {
+      this.getHomeGoods(this.currentType)
     },
     /**
      * 网络请求相关的方法
@@ -112,6 +140,8 @@ export default {
         this.goods[type].list.push(...res.data.data.list);
         // 更新页码
         this.goods[type].page += 1;
+        // 主动调用finishPullUp(),才会让做下一次的下拉加载更多
+        this.$refs.scroll.finishPullUp()
       });
     },
   },
