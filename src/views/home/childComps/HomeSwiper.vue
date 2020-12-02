@@ -4,7 +4,7 @@
       <!-- 在data()里面的banners里面取出数据，在</swiper-item>进行展示，
         因为</swiper-item>已经预留了插条 -->
       <a :href="item.link">
-        <img :src="item.image" alt="" />
+        <img :src="item.image" alt="" @load="imageLoad">
       </a>
     </swiper-item>
   </swiper>
@@ -22,13 +22,27 @@ export default {
       default() {
         return []
       }
+    },
+    data() {
+      return {
+        isLoad: false
+      }
     }
   },
   components: {
     Swiper,
     SwiperItem
+  },
+  methods: {
+    imageLoad() {
+      if(!this.isLoad) { // 让只执行一次
+        this.$emit('swiperImageLoad')
+        this.isLoad = true
+      }
+
+    }
   }
-};
+}
 </script>
 
 <style>
