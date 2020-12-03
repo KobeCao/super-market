@@ -80,13 +80,15 @@ export default {
     },
   },
   destroyed() {
-    console.log('home destroyed');
+    // console.log('home destroyed');
   },
+  // 是在被包裹组建被激活的状态下使用的生命周期钩子
   activated() {
     this.$refs.scroll.scrollTo(0,this.saveY,0)
     //重新进行刷新
     this.$refs.scroll.refresh()
   },
+  // 在被包裹组件停止使用时调用
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY()
   },
