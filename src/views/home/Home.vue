@@ -90,7 +90,10 @@ export default {
   },
   // 在被包裹组件停止使用时调用
   deactivated() {
+    // 1. 保存y值
     this.saveY = this.$refs.scroll.getScrollY()
+
+    // 2. 取消全局事件的监听
   },
   created() {
     // 1.请求多个数据
@@ -102,7 +105,7 @@ export default {
   },
   mounted() {
     // 图片加载完成的事件监听
-    const refresh = debounce(this.$refs.scroll.refresh,50)
+    const refresh = debounce(this.$refs.scroll.refresh, 50)
     this.$bus.$on('itemImageLoad',() => {
       refresh()
     })
@@ -149,8 +152,8 @@ export default {
       getHomeMultidata().then((res) => {
         // 将请求的数据保存到data()里面
         // this.result = res;
-        this.banners = res.data.data.banner.list;
-        this.recommends = res.data.data.recommend.list;
+        this.banners = res.data.banner.list;
+        this.recommends = res.data.recommend.list;
       });
     },
     getHomeGoods(type) {
@@ -158,7 +161,7 @@ export default {
       const page = this.goods[type].page + 1;
       getHomeGoods(type, page).then((res) => {
         // 将data里面的数据取出来保存到goods里面的list[]数组里面
-        this.goods[type].list.push(...res.data.data.list);
+        this.goods[type].list.push(...res.data.list);
         // 更新页码
         this.goods[type].page += 1;
         // 主动调用finishPullUp(),才会让做下一次的下拉加载更多
