@@ -1,6 +1,6 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"/>
+    <detail-nav-bar class="detail-nav" @titleCilck="titleCilck"/>
     <scroll class="content" ref="scroll">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
@@ -26,6 +26,8 @@
   import GoodsList from 'components/content/goods/GoodsList'
 
   import {getDetail, Goods, Shop, GoodsParam, getRecommend } from "network/detail";
+  import { debounce } from 'common/utils';
+  import {itemListenerMixin} from "common/mixin"
 
   export default {
     name: "Detail",
@@ -40,6 +42,7 @@
       Scroll,
       GoodsList,
     },
+    mixins: [itemListenerMixin],
     data() {
       return {
         iid: null,
@@ -49,7 +52,8 @@
         detailInfo: {},
         paramInfo: {},
         commentInfo: {},
-        recommends: []
+        recommends: [],
+        themeTopYs: [0,1000,2000,3000]
       }
     },
     created() {
@@ -87,9 +91,18 @@
         this.recommends = res.data.list
       })
     },
+    mounted() {
+    },
+    destroyed() {
+      this.$bus.$off('itemImgLoad', this.itemImgListener);
+    },
     methods: {
       imageLoad() {
         this.$refs.scroll.refresh()
+      },
+      titleCilck(index) {
+        console.log(index);
+        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],200)
       }
     }
   }

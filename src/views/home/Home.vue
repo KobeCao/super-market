@@ -46,6 +46,7 @@ import BackTop from "components/content/backTop/BackTop"
 // 方法
 import { getHomeMultidata, getHomeGoods } from "network/home";
 import {debounce} from "common/utils"
+import {itemListenerMixin} from 'common/mixin'
 
 export default {
   name: "Home",
@@ -59,6 +60,7 @@ export default {
     Scroll,
     BackTop
   },
+  mixins: [itemListenerMixin],
   data() {
     return {
       banners: [],
@@ -71,7 +73,8 @@ export default {
       currentType: "pop",
       isShowBackTop: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     };
   },
   computed: {
@@ -92,8 +95,8 @@ export default {
   deactivated() {
     // 1. 保存y值
     this.saveY = this.$refs.scroll.getScrollY()
-
-    // 2. 取消全局事件的监听
+    // 2. 取消全局事件的监听, 在off()里面传入需要取消的事件和监听的函数
+    this.$bus.$off('itemImgLoad',this.itemImgListener)
   },
   created() {
     // 1.请求多个数据
@@ -104,11 +107,15 @@ export default {
     this.getHomeGoods("sell");
   },
   mounted() {
-    // 图片加载完成的事件监听
-    const refresh = debounce(this.$refs.scroll.refresh, 50)
-    this.$bus.$on('itemImageLoad',() => {
-      refresh()
-    })
+    // 这个地方Img标签确实被挂载，但是其中的图片还没有占据高度
+    // 图片加载完成的事件监听  this.$refs.scroll.refresh对这个函数进行防抖操作
+    // const refresh = debounce(this.$refs.scroll.refresh, 100)
+
+    // // 对监听的事件进行保存
+    // this.itemImgListener = () => {
+    //   refresh()
+    // }
+    // this.$bus.$on('itemImageLoad',this.itemImgListener)
   },
   methods: {
     /**
