@@ -2,7 +2,7 @@
   <div>
     <swiper class="detail-swiper" v-if="topImages.length">
       <swiper-item class="item" v-for="(item, index) in topImages" :key="index">
-        <img :src="item" alt="">
+        <img :src="item" @load="imageLoad">
       </swiper-item>
     </swiper>
   </div>
@@ -13,16 +13,27 @@
 
 	export default {
 		name: "DetailSwiper",
-    components: {
-		  Swiper,
-      SwiperItem
-    },
     props: {
 		  topImages: {
 		    type: Array,
         default() {
 		      return []
         }
+      }
+    },
+    data () {
+      return {
+        isLoad: false
+      }
+    },
+    components: {
+		  Swiper,
+      SwiperItem
+    },
+    methods:{
+      imageLoad () {
+        !this.isLoad && this.$emit('detailSwiperImageLoaded');
+        this.isLoad = true;
       }
     }
 	}

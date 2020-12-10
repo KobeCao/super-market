@@ -1,14 +1,23 @@
 <template>
   <div id="detail">
+    <!-- 头部导航栏 -->
     <detail-nav-bar class="detail-nav" @titleCilck="titleCilck"/>
+    <!-- 滑屏滚动 -->
     <scroll class="content" ref="scroll">
-      <detail-swiper :top-images="topImages"/>
+      <!-- 轮播图 -->
+      <detail-swiper :top-images="topImages" />
+       <!--商品介绍 -->
       <detail-base-info :goods="goods"/>
+      <!-- 商品店家信息 -->
       <detail-shop-info :shop="shop"/>
-      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
-      <detail-param-info :param-info="paramInfo"/>
-      <detail-comment-info :comment-info="commentInfo"/>
-      <goods-list :goods="recommends"/>
+      <!-- 商品具体信息及穿着展示图片信息 -->
+      <!-- <detail-goods-info :detail-info="detailInfo" ></detail-goods-info> -->
+      <!--  商品尺码参数等信息 -->
+      <detail-param-info ref="param" :param-info="paramInfo"/>
+        <!-- 商品评论信息 -->
+        <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+      <!-- 更多商品推荐 -->
+       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
   </div>
 </template>
@@ -25,7 +34,7 @@
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
 
-  import {getDetail, Goods, Shop, GoodsParam, getRecommend } from "network/detail";
+  import {getDetail, Goods, Shop, GoodsParam,getRecommend} from "network/detail";
   import { debounce } from 'common/utils';
   import {itemListenerMixin} from "common/mixin"
 
@@ -40,7 +49,7 @@
       DetailParamInfo,
       DetailCommentInfo,
       Scroll,
-      GoodsList,
+      GoodsList
     },
     mixins: [itemListenerMixin],
     data() {
@@ -53,7 +62,8 @@
         paramInfo: {},
         commentInfo: {},
         recommends: [],
-        themeTopYs: [0,1000,2000,3000]
+        themeTopYs: [],
+        getThemeTopY: null
       }
     },
     created() {
@@ -83,15 +93,20 @@
         if(data.rate.cRate !== 0) {
           this.commentInfo = data.rate.list[0]
         }
-
       })
-      // 3. 请求推荐数据
+      // 3.请求推荐数据
       getRecommend().then(res => {
         console.log(res);
         this.recommends = res.data.list
       })
     },
-    mounted() {
+    updated() {
+      this.themeTopYs = [];
+      this.themeTopYs.push(0);
+      this.themeTopYs.push(this.$refs.param.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+      this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+      console.log(this.themeTopYs);
     },
     destroyed() {
       this.$bus.$off('itemImgLoad', this.itemImgListener);
@@ -102,7 +117,7 @@
       },
       titleCilck(index) {
         console.log(index);
-        this.$refs.scroll.scrollTo(0,-this.themeTopYs[index],200)
+        this.$refs.scroll.scrollTo(0, -this.themeTopYs[index],200)
       }
     }
   }
