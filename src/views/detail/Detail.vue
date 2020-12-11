@@ -1,9 +1,12 @@
 <template>
   <div id="detail">
     <!-- 头部导航栏 -->
-    <detail-nav-bar class="detail-nav" @titleCilck="titleCilck"/>
+    <detail-nav-bar class="detail-nav" @titleCilck="titleCilck" ref="nav"/>
     <!-- 滑屏滚动 -->
-    <scroll class="content" ref="scroll">
+    <scroll class="content"
+     ref="scroll"
+     :probe-type="3"
+     @scroll="contentScroll">
       <!-- 轮播图 -->
       <detail-swiper :top-images="topImages" />
        <!--商品介绍 -->
@@ -19,6 +22,10 @@
       <!-- 更多商品推荐 -->
        <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
+    <!-- 底部工具栏 -->
+    <detail-bottom-bar/>
+     <!-- 箭头按钮 -->
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -30,13 +37,14 @@
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import DetailParamInfo from './childComps/DetailParamInfo'
   import DetailCommentInfo from './childComps/DetailCommentInfo'
+  import DetailBottomBar from './childComps/DetailBottomBar'
 
   import Scroll from 'components/common/scroll/Scroll'
   import GoodsList from 'components/content/goods/GoodsList'
 
   import {getDetail, Goods, Shop, GoodsParam,getRecommend} from "network/detail";
   import { debounce } from 'common/utils';
-  import {itemListenerMixin} from "common/mixin"
+  import {itemListenerMixin,backTopMixin} from "common/mixin"
 
   export default {
     name: "Detail",
@@ -48,10 +56,11 @@
       DetailGoodsInfo,
       DetailParamInfo,
       DetailCommentInfo,
+      DetailBottomBar,
       Scroll,
       GoodsList
     },
-    mixins: [itemListenerMixin],
+    mixins: [itemListenerMixin,backTopMixin],
     data() {
       return {
         iid: null,
@@ -63,7 +72,9 @@
         commentInfo: {},
         recommends: [],
         themeTopYs: [],
-        getThemeTopY: null
+        getThemeTopY: null,
+        currentIndex: 0,
+        isShowBackTop: false,
       }
     },
     created() {
@@ -73,7 +84,7 @@
       // 2.根据iid请求详情数据
       getDetail(this.iid).then(res => {
         // 1.获取顶部的图片轮播数据
-        console.log(res);
+        // console.log(res);
         const data = res.result;
         this.topImages = data.itemInfo.topImages
 
@@ -96,7 +107,7 @@
       })
       // 3.请求推荐数据
       getRecommend().then(res => {
-        console.log(res);
+        // console.log(res);
         this.recommends = res.data.list
       })
     },
@@ -106,6 +117,7 @@
       this.themeTopYs.push(this.$refs.param.$el.offsetTop);
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+      this.themeTopYs.push(Number.MAX_VALUE);
       console.log(this.themeTopYs);
     },
     destroyed() {
@@ -118,7 +130,30 @@
       titleCilck(index) {
         console.log(index);
         this.$refs.scroll.scrollTo(0, -this.themeTopYs[index],200)
-      }
+      },
+      contentScroll(position) {
+        // 1.获取y值
+        const positionY = -position.y
+        // 2. 使用positionY和主题中的的值进行对比，来决定当前应该显示哪一个index
+        let length = this.themeTopYs.length;
+        for(let i = 0; i < length-1; i++) {
+          if(this.currentIndex !== i && (positionY >= this.themeTopYs[i] && positionY <
+          this.themeTopYs[i+1])) {
+            this.currentIndex = i;
+            this.$refs.nav.currentIndex = this.currentIndex
+          }
+          // if(this.currentIndex !== i && ((i < length - 1 && positionY >= this.themeTopYs[i]
+          // && positionY < this.themeTopYs[i+1]) || (i === length - 1 && positionY >
+          // this.themeTopYs[i]))) {
+          //   this.currentIndex = i;
+          //   console.log(this.currentIndex);
+          //   this.$refs.nav.currentIndex = this.currentIndex
+          // }
+
+        }
+        // 3. 判断BackTop是否显示回到顶部
+        this.listenshoBackTop(position)
+      },
     }
   }
 </script>
