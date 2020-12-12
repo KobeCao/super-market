@@ -27,10 +27,10 @@ export default {
     return {
       isSelect: false,
     };
-  },
+  } ,
   methods: {
     addToCart() {
-      this.$emit("addGoodToCart");
+      this.$emit("addCart");
     },
     selectClick() {
       this.isSelect = this.isSelect ? false : true;

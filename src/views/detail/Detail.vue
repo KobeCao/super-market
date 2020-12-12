@@ -23,7 +23,7 @@
        <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
     <!-- 底部工具栏 -->
-    <detail-bottom-bar/>
+    <detail-bottom-bar @addCart="addToCart" />
      <!-- 箭头按钮 -->
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
@@ -118,7 +118,7 @@
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
       this.themeTopYs.push(Number.MAX_VALUE);
-      console.log(this.themeTopYs);
+      // console.log(this.themeTopYs);
     },
     destroyed() {
       this.$bus.$off('itemImgLoad', this.itemImgListener);
@@ -154,6 +154,25 @@
         // 3. 判断BackTop是否显示回到顶部
         this.listenshoBackTop(position)
       },
+      addToCart() {
+        // 1.获取购物车需要展示的信息
+        const product = {}
+        // 调用topImages: []数组里面的图片
+        product.image = this.topImages[0];
+        // 调用 goods: {}对象里面的文字
+        product.title = this.goods.title;
+        // 调用 goods: {}对象里面的描述信息
+        product.title = this.goods.desc;
+        // 调用 goods: {}对象里面的价格,因为商品价格是个区间，所以将商品价格不能写死。
+        // 需要在goods里面将数据换成固定的
+        product.title = this.goods.realPrice;
+        // 商品的iid也要传到购物车里面，因为Iid是商品的唯一标识，
+        product.iid = this.iid;
+
+        // 2.将商品添加到购物车里面
+        // this.$store.commit('addCart',product)
+        this.$store.dispatch('addCart',product)
+      }
     }
   }
 </script>
