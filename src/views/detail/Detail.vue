@@ -162,10 +162,10 @@
         // 调用 goods: {}对象里面的文字
         product.title = this.goods.title;
         // 调用 goods: {}对象里面的描述信息
-        product.title = this.goods.desc;
+        product.desc = this.goods.desc;
         // 调用 goods: {}对象里面的价格,因为商品价格是个区间，所以将商品价格不能写死。
         // 需要在goods里面将数据换成固定的
-        product.title = this.goods.realPrice;
+        product.price = this.goods.realPrice;
         // 商品的iid也要传到购物车里面，因为Iid是商品的唯一标识，
         product.iid = this.iid;
 

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import getters from './getters'
 
 import mutations from './mutations'
 import actions from './actions'
@@ -13,7 +14,8 @@ const state = {
 const store = new Vuex.Store({
   state,
   mutations,
-  actions
+  actions,
+  getters
 })
 //3.挂载Vue实例上
 export default store
