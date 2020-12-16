@@ -18,4 +18,7 @@ export default {
 
 <style>
 @import "assets/css/base.css";
+html{
+touch-action: none;
+}
 </style>
