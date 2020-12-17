@@ -1,47 +1,51 @@
 <template>
-  <div>
-    <swiper class="detail-swiper" v-if="topImages.length">
-      <swiper-item class="item" v-for="(item, index) in topImages" :key="index">
-        <img :src="item" @load="imageLoad">
-      </swiper-item>
-    </swiper>
-  </div>
+  <!-- 商品详情轮播图 -->
+  <swiper class="detail-swiper">
+    <swiper-item v-for="item in topImages" :key="item">
+      <img v-lazy="item" alt="" @load="imageLoad">
+    </swiper-item>
+  </swiper>
+
 </template>
 
 <script>
+  // 引入公共轮播图组件
   import {Swiper, SwiperItem} from 'components/common/swiper'
 
-	export default {
-		name: "DetailSwiper",
-    props: {
-		  topImages: {
-		    type: Array,
-        default() {
-		      return []
+  export default {
+    props:{
+      topImages: {
+        type: Array,
+        default () {
+          return [];
         }
       }
+      
     },
     data () {
       return {
         isLoad: false
       }
     },
+    
     components: {
-		  Swiper,
+      Swiper,
       SwiperItem
     },
+
     methods:{
       imageLoad () {
         !this.isLoad && this.$emit('detailSwiperImageLoaded');
         this.isLoad = true;
       }
     }
-	}
+    
+  }
 </script>
 
 <style scoped>
-  .item {
-    text-align: center;
-    height: 300px;
+
+  .detail-swiper img{
+    height: 420px;
   }
 </style>

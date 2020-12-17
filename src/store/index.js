@@ -1,21 +1,35 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import getters from './getters'
+
+
 
 import mutations from './mutations'
 import actions from './actions'
-//1.安装插件
-Vue.use(Vuex)
-//2.创建store对象
+import getters from './getters'
+
+// 使用vuex状态管理插件
+Vue.use(Vuex);
+
 const state = {
-  // 使用cartList存放许多的数据及结构
-  cartList: []
-}
+
+    // 该数组是无迭代接口的数据，无es6的for-in语法
+    shoppingCartGoodsInfo: [],
+  }
+
+
+
+  
 const store = new Vuex.Store({
   state,
-  mutations,
   actions,
+  mutations,
   getters
+  
 })
-//3.挂载Vue实例上
+
+
 export default store
+
+
+
+

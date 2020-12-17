@@ -1,30 +1,36 @@
 import Vue from 'vue'
-import App from './App.vue'
+import App from './App'
 import router from './router'
 import store from './store'
-
 import FastClick from 'fastclick'
-import VueLazyload from 'vue-lazyload'
+import vueLzayLoad from 'vue-lazyload'
 
-import toast from './components/common/toast'
+// 导入自定义的弹窗插件
+import toast from 'components/common/toast'
 
-Vue.config.productionTip = false
-// 添加事件总线
-Vue.prototype.$bus = new Vue()
+// 解决移动端点击事件的300ms延迟
+FastClick.attach(document.body);
 
-// 安装toast插件
-Vue.use(toast)
+// 懒加载
+Vue.use(vueLzayLoad, {
 
-// 解决移动端300ms的延迟 初始化FastClick实例。在页面的DOM文档加载完成后
-FastClick.attach(document.body)
+  // 图片未加载回来使用这张图片进行占位
+  loading: require('./assets/images/common/loading.svg'),
+  error: require('./assets/images/common/error.svg')
 
-// 使用懒加载的插件
-Vue.use(VueLazyload,{
-  loading: require('./assets/img/common/placeholder.png')
 })
+
+
+Vue.config.productionTip = false;
+
+// 定义事件总线
+Vue.prototype.$bus = new Vue();
+
+// 使用自定义弹窗插件
+Vue.use(toast);
+
 new Vue({
-  el: '#app',
-  router,
-  store,
   render: h => h(App),
-})
+  router,
+  store
+}).$mount('#app')

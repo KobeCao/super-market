@@ -8,45 +8,39 @@
     </div>
     <div class="info-key">{{detailInfo.detailImage[0].key}}</div>
     <div class="info-list">
-      <img v-for="(item, index) in detailInfo.detailImage[0].list" :key="index" :src="item">
+      <img v-for="(item, index) in detailInfo.detailImage[0].list" v-lazy="item" alt="" :key="index" @load="detailGoodsImageLoaded">
     </div>
   </div>
 </template>
 
 <script>
-	export default {
-		name: "DetailGoodsInfo",
+  export default {
     props: {
       detailInfo: {
         type: Object,
-        default() {
+        default () {
           return {}
         }
       }
     },
-    // data() {
-		// 	return {
-		// 		counter: 0,
-    //     imagesLength: 0
-    //   }
-    // },
-    // methods: {
-	  //   imgLoad() {
-    //     // 判断, 所有的图片都加载完了, 那么进行一次回调就可以了.
-    //     this.counter += 1
-    //     if(this.counter === this.imagesLength) {
-    //       this.$emit('imageLoad');
+    data () {
+      return {
+        imageLoadedCound: null,
+      }
+    },
 
-    //     }
-	  //   }
-    // },
-    // watch: {
-	  //   detailInfo() {
-	  //     // 获取图片的个数
-	  //   	this.imagesLength = this.detailInfo.detailImage[0].list.length
-	  //   }
-    // }
-	}
+    methods: {
+      detailGoodsImageLoaded () {
+
+        // 每次有图片加载成功都判断当前商品详情里的图片是否加载过3/4，如果过半则认为所有图片都加载过来，然后发送自定义事件
+        this.imageLoadedCound >= this.detailInfo.detailImage[0].list.length * 3 / 4 && this.$emit('detailGoodsAllImagesLoaded');
+
+        // 不过半就次数加一
+        this.imageLoadedCound++;
+      }
+    }
+
+  }
 </script>
 
 <style scoped>
@@ -74,17 +68,18 @@
     float: right;
   }
 
-  .info-desc .start::before, .info-desc .end::after {
+  .info-desc .start::before,
+  .info-desc .end::after {
     content: '';
     position: absolute;
     width: 5px;
     height: 5px;
     background-color: #333;
-    bottom: 0;
+    bottom: 0px;
   }
 
   .info-desc .end::after {
-    right: 0;
+    right: 0px;
   }
 
   .info-desc .desc {

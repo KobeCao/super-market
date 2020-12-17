@@ -1,104 +1,149 @@
 <template>
-  <div class="bottom-bar">
-    <div class="check-content">
-      <check-button
-      :is-checked="isSelectAll"
-      class="check-button"
-      @click.native="checkCilck">
-      </check-button>
+  <div class="cart-bottom-bar">
+
+    <!-- 全选中按钮 -->
+    <div class="select-all" @click="checkClick">
+      <check-button class="checked" :isCheck="getSelect"></check-button>
       <span>全选</span>
     </div>
-    <div class="price">
-      合计：{{totalPrice}}
+
+    <!-- 选中商品的总价格 -->
+    <div class="price-all">
+      <span>合计：</span>
+      <span class="price">{{getPrice}}</span>
     </div>
-    <div class="calculate" @click="calcClick">
-      去计算({{checkLength}})
-    </div>
+
+    <!-- 结算按钮 -->
+    <div class="settlement" @click="payClick">去支付({{getGoodsNum}})</div>
   </div>
 </template>
 
 <script>
-import CheckButton from 'components/content/checkButton/CheckButton'
-// 在vuex中导入mapGetters
-import { mapGetters } from 'vuex'
 
-export default {
-  name: "CartBottomBar",
-  components: {
-    CheckButton
-  },
-  computed: {
-    ...mapGetters(['cartList']),
-    totalPrice() {
-      return '￥' + this.cartList.filter(item => {
-        return item.checked
-       }).reduce((preValue,item) => { //preValue 前一个值 item 当前元素的下标
-      //  当前元素的价格乘以当前元素的数量,将前一次的价格加进去，同时保留两位小数
-      return  preValue + item.price * item.count
-      },0).toFixed(2)
-    },
-    checkLength() {
-      // 计算选中的个数
-      return this.cartList.filter(item => item.checked).length
-    },
-    // 是否全部选中
-    isSelectAll() {
-      // 1. 使用filter()
-      // if(this.cartList.length === 0) return false
-      // return !(this.cartList.filter(item => !item.checked).length)
 
-      // 2. 使用find()
-      if(this.cartList.length === 0) return false
-      return !this.cartList.find(item => !item.checked)
-    }
-  },
-  methods: {
-    checkCilck() {
-      if(this.isSelectAll) { // 全部选中
-        this.cartList.forEach(item => item.checked = false)
-      } else { // 部分或全部不选中
-        this.cartList.forEach(item => item.checked = true)
-      }
+  import CheckButton from 'components/content/checkButton/CheckButton'
+  import {mapGetters} from 'vuex'
+
+  export default {
+    components:{
+      CheckButton
     },
-    calcClick() {
-      if(!this.isSelectAll) {
-        this.$toast.show('请选择购买的商品')
+
+    computed: {
+      
+      ...mapGetters(['getCartList']),
+
+      // 计算选中商品的总价格
+      getPrice () {
+
+          
+        return '￥' + this.getCartList
+        
+          // 选出勾选中的商品
+          .filter( item => item.check)
+            
+            // 将勾选中的商品进行相加
+            .reduce( (preValue, item) =>  preValue + (item.realPrice * item.count), 0)
+
+              .toFixed(2)
+      },
+
+      // 选中的商品件数
+      getGoodsNum () {
+        return this.getCartList
+          .filter( item => item.check)
+            .length
+      },
+
+
+      // 判断是否全部选中
+      getSelect () { //                        跳出循环对数据本身的布尔值取反      有没选中的商品跳出遍历
+        return this.getCartList.length !== 0 ? !this.getCartList.find( item => !item.check) : false;
+      }
+
+    },
+    methods: {
+
+      // 该方法不能简化
+      checkClick () {
+
+        //所有商品都选中
+        if (this.getSelect) {
+          this.getCartList.forEach( (item) => {
+            item.check = false;
+          })
+
+          // 部分商品选中
+        }else{
+           this.getCartList.forEach( (item) => {
+            item.check = true;
+          })
+        }
+      },
+
+      payClick () {
+        let msg = '';
+
+        // 是否有选中商品
+        if (this.getGoodsNum) {
+          msg = '安全支付通道建立中';
+        }else{
+          msg = '您还没有选择商品哦~~';
+        }
+        this.$toast.show(msg, 2000);
       }
     }
+    
   }
-}
 </script>
 
-<style>
-.bottom-bar {
-  position: relative;
-  display: flex;
-  height: 35px;
-  line-height: 35px;
-  font-size: 14px;
-  background-color: #eee;
-}
-.check-content {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-  width: 60px;
-}
-.check-button {
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
-  margin-right: 5px;
-}
-.price {
-  margin-left: 20px;
-  flex: 1;
-}
-.calculate {
- width: 100px;
- background-color: red;
- color: #fff;
- text-align: center;
+<style scoped>
+  .cart-bottom-bar{
+    position: absolute;
+    display: flex; 
+    width: 100vw;
+    height: 40px;
+    bottom: 49px;
+    left: 0px;
+    border: 1px solid #f5f2f2;
+  }  
 
-}
+  .price-all,
+  .settlement{
+    flex:1;
+    line-height: 40px;
+    text-align: center;
+  }
+
+  .select-all{
+    display: flex;
+    flex:1;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid black; */
+  }
+  .select-all span{
+    margin-left: 5px;
+    margin-top: 1px;
+  }
+  .checked{
+    height: 60%;
+  }
+  
+  .price-all{
+    flex: 2;
+    text-align: left;
+    font-size: 14px;
+  }
+  .price{
+    color: #f40;
+    font-size: 20px;
+  }
+
+  .settlement{
+    background-color: #f40;
+    color: #fff;
+  }
+
+
 </style>

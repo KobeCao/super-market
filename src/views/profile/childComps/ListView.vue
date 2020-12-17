@@ -18,9 +18,9 @@ export default {
     },
   },
   methods: {
-    // getImage() {
-    //   return item.icon;
-    // },
+    getImage() {
+      return item.icon;
+    },
   },
 };
 </script>

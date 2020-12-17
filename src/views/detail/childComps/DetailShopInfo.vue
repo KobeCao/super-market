@@ -1,60 +1,65 @@
 <template>
   <div class="shop-info">
+
+    <!-- 店家图标和名称 -->
     <div class="shop-top">
-      <!-- 店铺图片logo -->
-      <img :src="shop.logo">
-      <!-- 店铺名字 -->
+      <img :src="shop.logo" alt="">
       <span class="title">{{shop.name}}</span>
     </div>
+
+    <!-- 店家相关描述 -->
     <div class="shop-middle">
-      <div class="shop-middle-item shop-middle-left">
+      <div class="shop-middle-left">
+
+        <!-- 店家商品销售量 -->
         <div class="info-sells">
-          <div class="sells-count">
-            <!-- 总销量 -->
-            {{shop.sells | sellCountFilter}}
-          </div>
+          <div class="sells-count">{{shop.sells | sellCountFilter}}</div>
           <div class="sells-text">总销量</div>
         </div>
+
+        <!-- 店家全部宝贝 -->
         <div class="info-goods">
-          <div class="goods-count">
-            <!-- 全部宝贝 -->
-            {{shop.goodsCount}}
-          </div>
+          <div class="goods-count">{{shop.goodsCount + " 件"}}</div>
           <div class="goods-text">全部宝贝</div>
         </div>
       </div>
-      <div class="shop-middle-item shop-middle-right">
+
+      <!-- 店家评价 -->
+      <div class="shop-middle-right">
         <table>
           <tr v-for="(item, index) in shop.score" :key="index">
-            <td>{{item.name}}</td>
-            <!-- 根据isBetter动态绑定class -->
-            <td class="score" :class="{'score-better': item.isBetter}">{{item.score}}</td>
-            <td class="better" :class="{'better-more': item.isBetter}"><span>{{item.isBetter ? '高':'低'}}</span></td>
+            <td>{{item.name}}：</td>
+            <td class="score" :class="{'score-color': item.isBetter}">{{item.score}}</td>
+            <td class="better" :class="{'better-color': item.isBetter}"><span>{{item.isBetter ? "高" : '低'}}</span></td>
           </tr>
         </table>
       </div>
     </div>
+
     <div class="shop-bottom">
-      <div class="enter-shop">进店逛逛</div>
+      <div>来啊~  进店逛逛啊~~~</div>
     </div>
   </div>
 </template>
 
 <script>
-	export default {
-		name: "DetailShopInfo",
+  export default {
     props: {
-		  shop: {
-		    type: Object
+      shop: {
+        type: Object,
+        default () {
+          return {}
+        }
       }
     },
-    filters: {
-      sellCountFilter: function (value) {
-        if (value < 10000) return value;
-        return (value/10000).toFixed(1) + '万'
+    filters:{
+      sellCountFilter (value) {
+        let count = value < 10000 ?  value : (value / 10000).toFixed(1) + ' 万';
+        return count;
       }
     }
-	}
+    
+  }
 </script>
 
 <style scoped>
@@ -88,23 +93,28 @@
     align-items: center;
   }
 
-  .shop-middle-item {
+  .shop-middle-right,
+  .shop-middle-left {
     flex: 1;
   }
 
   .shop-middle-left {
     display: flex;
     justify-content: space-evenly;
-    color: #333;
     text-align: center;
-    border-right: 1px solid rgba(0,0,0,.1);
+    padding: 15px 0px;
+    font-weight: 600;
+    border-right: 1px solid rgba(0, 0, 0, .2);
+    color: #333;
   }
 
-  .sells-count, .goods-count {
+  .sells-count, 
+  .goods-count {
     font-size: 18px;
   }
 
-  .sells-text, .goods-text {
+  .sells-text, 
+  .goods-text {
     margin-top: 10px;
     font-size: 12px;
   }
@@ -115,45 +125,45 @@
   }
 
   .shop-middle-right table {
-    width: 120px;
-    margin-left: 30px;
+    width: 100%;
   }
 
   .shop-middle-right table td {
-    padding: 5px 0;
+    flex:1;
+    padding: 5px 11px;
   }
 
   .shop-middle-right .score {
+    text-align: center;
     color: #5ea732;
   }
 
-  .shop-middle-right .score-better {
+  .shop-middle-right .score-color {
     color: #f13e3a;
   }
 
+
+  
   .shop-middle-right .better span {
     background-color: #5ea732;
     color: #fff;
     text-align: center;
   }
 
-  .shop-middle-right .better-more span {
+  .shop-middle-right .better-color span {
     background-color: #f13e3a;
   }
 
   .shop-bottom {
-    text-align: center;
+    height: 20px;
     margin-top: 10px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 13px;
+    border-radius: 10px;
+    background-color: #f40;
+    color: #fff;
   }
 
-  .enter-shop {
-    display: inline-block;
-    font-size: 14px;
-    background-color: #f2f5f8;
-    width: 150px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    border-radius: 10px;
-  }
+
 </style>

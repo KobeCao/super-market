@@ -2,7 +2,7 @@
 import request from './request'
 
  // 封装获取商品分类的数据函数
-const getCategory =  () => {
+const getCategory = () => {
   return request({
     url: '/category',
   })
@@ -27,6 +27,8 @@ const getVarieticeGoods = (miniWallkey, type) => {
     }
   })
 }
+
+
 
 export default {
   getCategory,

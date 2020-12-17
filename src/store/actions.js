@@ -1,28 +1,21 @@
-// 导入常量
-import {
-  ADD_COUNTER,
-  ADD_T0_CART
-} from './mutation-types'
 
+import {ADD_COUNT, ADD_TO_CART} from './mutation_types'
 export default {
-  addCart(context, payload) {
-   return new Promise((resolve,reject) => {
-      //payload新添加的商品
-    let oldProduct = null;
-    for (let item of context.state.cartList) {
-      if (item.iid === payload.iid) {
-        oldProduct = item;
+  getGoodsInfo (context, data) {
+    return new Promise( (resolve, reject) => {
+      // 取出shoppingCartGoodsInfo中的具有和data相同id的数据
+      let newData = context.state.shoppingCartGoodsInfo.find( value => value.id === data.id);
+      if (!newData) {
+        // 分发添加商品到购物车的操作
+        context.commit(ADD_TO_CART, data);
+        // 成功添加商品到购物车的回调
+        resolve();
+      }else{
+        // 分发购物车已有商品的数量加一操作
+        context.commit(ADD_COUNT, newData);
+        // 商品数量加一成功
+        resolve();
       }
-    }
-    // 2. 判断oldProduct
-    if (oldProduct) { // 数量+1
-      context.commit(ADD_COUNTER, oldProduct)
-      resolve('当前的商品数量+1')
-    } else { // 添加新的商品
-      payload.count = 1;
-      context.commit(ADD_T0_CART, payload)
-      resolve('添加了新的商品')
-    }
-   })
+    })
   }
 }

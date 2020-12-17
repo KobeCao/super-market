@@ -1,23 +1,30 @@
 <template>
   <div id="profile">
-    <!-- 导航栏组件 -->
-    <nav-bar class="nav-bar"><div slot="center">超级商城</div></nav-bar>
-    <!--1.单独封装一个组件: 利用slot知识点-->
+    <nav-bar class="profile-nav-bar">
+      <div slot="center">我的商城</div>
+    </nav-bar>
+
+
     <user-info></user-info>
-    <!--2.没有单独封装: 不同的地方太多, 需要传过多的参数-->
+
+
+
     <section class="account">
+
       <div class="account-item">
         <div class="number">
           <span class="balance">0.00</span>元
         </div>
         <div class="account-info">我的余额</div>
       </div>
+
       <div class="account-item">
         <div class="number">
           <span class="balance">0</span>个
         </div>
         <div class="account-info">我的优惠</div>
       </div>
+
       <div class="account-item">
         <div class="number">
           <span class="balance">0</span>分
@@ -25,53 +32,55 @@
         <div class="account-info">我的积分</div>
       </div>
     </section>
-    <!--3.封装成一个整体-->
+
+
     <list-view :listData="orderList"></list-view>
     <list-view :listData="serviceList"></list-view>
   </div>
+  
 </template>
 
 <script>
-  // 导入导航栏组件
   import NavBar from 'components/common/navbar/NavBar'
-  // 导入登录注册组件
   import UserInfo from './childComps/UserInfo'
-
   import ListView from './childComps/ListView'
-	export default {
-		name: "Profile",
-    components: {
-      UserInfo,
-      ListView,
-      NavBar
-    },
-    data: function () {
-		  return {
+
+
+  export default {
+    data () {
+      return {
         orderList: [
-          {icon: require('../../assets/img/profile/message.svg'), info: '我的消息'},
-          {icon: require('../../assets/img/profile/pointer.svg'), info: '积分商城'},
-          {icon: require('../../assets/img/profile/vip.svg'), info: '会员卡'},
+          {icon: require('../../assets/images/profile/message.svg'), info: '我的消息'},
+          {icon: require('../../assets/images/profile/pointer.svg'), info: '积分商城'},
+          {icon: require('../../assets/images/profile/vip.svg'), info: '会员卡'},
         ],
         serviceList: [
-          {icon: require('../../assets/img/profile/cart.svg'), info: '我的购物车'},
-          {icon: require('../../assets/img/profile/shopping.svg'), info: '下载购物APP'},
+          {icon: require('../../assets/images/profile/cart.svg'), info: '我的购物车'},
+          {icon: require('../../assets/images/profile/shopping.svg'), info: '下载购物APP'},
         ]
-      }
+      } 
     },
-    mounted: function () {
+    components: {
+      NavBar,
+      UserInfo,
+      ListView
     }
-	}
+  }
 </script>
 
 <style scoped>
+ 
   #profile {
     background-color: #f2f2f2;
   }
 
-  .nav-bar {
-    background-color: var(--color-tint);
-    font-weight: 700;
+ .profile-nav-bar{
+     z-index: 2;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: '宋体';
     color: #fff;
+    background-color: var(--color-tint);
   }
 
   .account {
@@ -108,5 +117,4 @@
   .order-list, .service-list {
     margin-top: 12px;
   }
-
 </style>

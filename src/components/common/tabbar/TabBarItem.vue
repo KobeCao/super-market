@@ -1,53 +1,64 @@
 <template>
+ 
   <div class="tab-bar-item" @click="itemClick">
-    <!-- 不活跃的时候展示 -->
     <div v-if="!isActive"><slot name="item-icon"></slot></div>
-    <!-- 活跃的时候展示 -->
     <div v-else><slot name="item-icon-active"></slot></div>
-    <!-- 动态绑定style,当为true的时候是class,当是false时，不绑定 -->
     <div :style="activeStyle"><slot name="item-text"></slot></div>
+    
   </div>
+ 
 </template>
+
 <script>
 export default {
-  name: "TabBarItem",
-  props: {
+  props:{
     path: String,
-    activeColor: {
+    activeColor:{
       type: String,
       default: 'red'
     }
   },
-  computed: {
-    isActive() {
-      //$route那个路由处于活跃就是那个对象，
-      return this.$route.path.indexOf(this.path) !== -1
-    },
-    // 动态决定颜色
-    activeStyle() {
-      return this.isActive ? {color: this.activeColor} : {}
+
+  methods:{
+    itemClick () {
+
+      this.$router.push(this.path);
+
+      
     }
   },
-  methods: {
-    itemClick() {
-      // 动态决定跳转
-      this.$router.replace(this.path)
+  computed:{
+
+    // 拿到当前处于活跃的路由的路径与传过来的路径进行匹配，如果相同就返回true
+    isActive () {
+      return this.$route.path.indexOf(this.path) != -1;
+    },
+
+    // 设置首页、分类等可修改的文字颜色且有默认值
+    activeStyle () {
+      return this.isActive ? {color: this.activeColor} : {};
     }
   }
+  
 };
 </script>
+
 <style>
+
 .tab-bar-item {
   flex: 1;
-  text-align: center;
   height: 49px;
+  text-align: center;
+  font-family: '宋体';
   font-size: 14px;
 }
-.tab-bar-item img {
-  width: 24px;
+.tab-bar-item img{
   height: 24px;
+  width: 24px;
   margin-top: 3px;
-  vertical-align: middle;  /* 默认去掉3像素 */
-  margin-bottom: 2px;
+  margin-bottom: 4px;
+
+  vertical-align: middle;
 }
+
 </style>

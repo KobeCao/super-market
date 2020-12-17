@@ -1,49 +1,51 @@
 <template>
+  <!-- home轮播图组件 -->
   <swiper>
-    <swiper-item v-for="item in banners" :key="item.index">
-      <!-- 在data()里面的banners里面取出数据，在</swiper-item>进行展示，
-        因为</swiper-item>已经预留了插条 -->
-      <a :href="item.link">
-        <img :src="item.image" alt="" @load="imageLoad">
-      </a>
-    </swiper-item>
-  </swiper>
+      <swiper-item v-for="item in banners" :key="item.acm">
+        <a :href="item.link">
+          <img :src="item.image" alt="" @load="imageLoad">
+        </a>
+      </swiper-item>
+    </swiper>
 </template>
 
 <script>
-//导入轮播图组件
-import {Swiper, SwiperItem } from "components/common/swiper";
 
-export default {
-  name: "HomeSwiper",
-  props: {
-    banners: {
-      type: Array,
-      default() {
-        return []
+// 导入首页的轮播图组件
+import {Swiper, SwiperItem} from 'components/common/swiper'
+
+  export default {
+    props: {
+      banners:{
+        type: Array,
+        default () {
+          return [];
+        }
       }
     },
-    data() {
+    data () {
       return {
-        isLoad: false
+        isLoad: false,
       }
-    }
-  },
-  components: {
-    Swiper,
-    SwiperItem
-  },
-  methods: {
-    imageLoad() {
-      if(!this.isLoad) { // 让只执行一次
-        this.$emit('swiperImageLoad')
-        this.isLoad = true
-      }
+    },
 
+    components: {
+      Swiper,
+      SwiperItem
+    },
+    methods: {
+      imageLoad () {
+        !this.isLoad && this.$emit('homeSwiperImageLoaded');
+        this.isLoad = true;
+      }
     }
   }
-}
+ 
 </script>
 
-<style>
+<style scoped>
+  img{
+    border-radius:10px;
+
+  }
 </style>

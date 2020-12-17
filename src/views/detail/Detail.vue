@@ -1,210 +1,285 @@
 <template>
   <div id="detail">
     <!-- 头部导航栏 -->
-    <detail-nav-bar class="detail-nav" @titleCilck="titleCilck" ref="nav"/>
+    <detail-nav-bar
+      class="detail-nav-bar"
+      @detailNavBarClick="detailNavBarClick"
+      ref="detailNavBar"
+    ></detail-nav-bar>
+
     <!-- 滑屏滚动 -->
-    <scroll class="content"
-     ref="scroll"
-     :probe-type="3"
-     @scroll="contentScroll">
+    <scroll
+      class="detail-wrapper-scroll"
+      ref="scroll"
+      @scroll="contentScroll"
+      :probeType="3"
+    >
       <!-- 轮播图 -->
-      <detail-swiper :top-images="topImages" />
-       <!--商品介绍 -->
-      <detail-base-info :goods="goods"/>
+      <detail-swiper
+        :topImages="topImages"
+        @detailSwiperImageLoaded="detailSwiperImageLoaded"
+      ></detail-swiper>
+
+      <!--商品介绍 -->
+      <detail-base-info :goods="goods"></detail-base-info>
+
       <!-- 商品店家信息 -->
-      <detail-shop-info :shop="shop"/>
+      <detail-shop-info :shop="shop"></detail-shop-info>
+
       <!-- 商品具体信息及穿着展示图片信息 -->
-      <!-- <detail-goods-info :detail-info="detailInfo" ></detail-goods-info> -->
+      <detail-goods-info
+        :detailInfo="detailInfo"
+        @detailGoodsAllImagesLoaded="detailSwiperImageLoaded"
+      ></detail-goods-info>
+
       <!--  商品尺码参数等信息 -->
-      <detail-param-info ref="param" :param-info="paramInfo"/>
-        <!-- 商品评论信息 -->
-        <detail-comment-info ref="comment" :comment-info="commentInfo"/>
+      <detail-param-info :paramInfo="paramInfo" ref="param"></detail-param-info>
+
+      <!-- 商品评论信息 -->
+      <detail-comment-info
+        :commentInfo="commentInfo"
+        ref="comment"
+      ></detail-comment-info>
+
       <!-- 更多商品推荐 -->
-       <goods-list ref="recommend" :goods="recommends"/>
+      <detail-recommend-info
+        :recommendGoods="recommendGoods"
+        ref="recommend"
+      ></detail-recommend-info>
     </scroll>
-    <!-- 底部工具栏 -->
-    <detail-bottom-bar @addCart="addToCart" />
-     <!-- 箭头按钮 -->
-    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
-    <!-- <toast :message="message" :show="show"></toast> -->
+
+    <!-- 回到顶部 -->
+    <back-top @click.native="backTopClick" v-show="showBackTop"></back-top>
+
+    <!-- 底部加入购物车 -->
+    <detail-bottom-bar @addGoodToCart="toCartGoodInfo"></detail-bottom-bar>
   </div>
 </template>
 
 <script>
-  import DetailNavBar from './childComps/DetailNavBar'
-  import DetailSwiper from './childComps/DetailSwiper'
-  import DetailBaseInfo from './childComps/DetailBaseInfo'
-  import DetailShopInfo from './childComps/DetailShopInfo'
-  import DetailGoodsInfo from './childComps/DetailGoodsInfo'
-  import DetailParamInfo from './childComps/DetailParamInfo'
-  import DetailCommentInfo from './childComps/DetailCommentInfo'
-  import DetailBottomBar from './childComps/DetailBottomBar'
+// 导航栏组件
+import DetailNavBar from "./childComps/DetailNavBar";
 
-  import Scroll from 'components/common/scroll/Scroll'
-  import GoodsList from 'components/content/goods/GoodsList'
-  // import Toast from 'components/common/toast/Toast'
+// 商品的轮播图组件
+import DetailSwiper from "./childComps/DetailSwiper";
 
-  import {getDetail, Goods, Shop, GoodsParam,getRecommend} from "network/detail";
-  import { debounce } from 'common/utils';
-  import {itemListenerMixin,backTopMixin} from "common/mixin"
-  // 导入vuex中的mapActions方法
-  import { mapActions } from 'vuex'
+// 商品介绍组件
+import DetailBaseInfo from "./childComps/DetailBaseInfo";
 
-  export default {
-    name: "Detail",
-    components: {
-      DetailNavBar,
-      DetailSwiper,
-      DetailBaseInfo,
-      DetailShopInfo,
-      DetailGoodsInfo,
-      DetailParamInfo,
-      DetailCommentInfo,
-      DetailBottomBar,
-      Scroll,
-      GoodsList,
-      // Toast
-    },
-    mixins: [itemListenerMixin,backTopMixin],
-    data() {
-      return {
-        iid: null,
-        topImages: [],
-        goods: {},
-        shop: {},
-        detailInfo: {},
-        paramInfo: {},
-        commentInfo: {},
-        recommends: [],
-        themeTopYs: [],
-        getThemeTopY: null,
-        currentIndex: 0,
-        isShowBackTop: false,
-        // message: '',
-        // show: false,
-      }
-    },
-    created() {
-      // 1.保存传入的iid
-      this.iid = this.$route.params.iid
+// 商品店铺组件
+import DetailShopInfo from "./childComps/DetailShopInfo";
 
-      // 2.根据iid请求详情数据
-      getDetail(this.iid).then(res => {
-        // 1.获取顶部的图片轮播数据
-        // console.log(res);
-        const data = res.result;
-        this.topImages = data.itemInfo.topImages
+// 滑屏滚动组件
+import Scroll from "components/common/scroll/Scroll";
 
-        // 2.获取商品信息
-        this.goods = new Goods(data.itemInfo, data.columns, data.shopInfo.services)
+// 商品具体信息及穿着展示图片组件
+import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
 
-        // 3.创建店铺信息的对象
-        this.shop = new Shop(data.shopInfo)
+// 商品尺码参数等信息的组件
+import DetailParamInfo from "./childComps/DetailParamInfo";
 
-        // 4.保存商品的详情数据
-        this.detailInfo = data.detailInfo;
+// 商品评论信息组件
+import DetailCommentInfo from "./childComps/DetailCommentInfo";
 
-        // 5.获取参数的信息
-        this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
+// 更多商品推荐组件
+import DetailRecommendInfo from "./childComps/DetailRecommendInfo";
 
-        // 6. 获取评论信息
-        if(data.rate.cRate !== 0) {
-          this.commentInfo = data.rate.list[0]
-        }
-      })
-      // 3.请求推荐数据
-      getRecommend().then(res => {
-        // console.log(res);
-        this.recommends = res.data.list
-      })
-    },
-    updated() {
+// 加入购物车组件
+import DetailBottomBar from "./childComps/DetailBottomBar";
+
+// 引入发送请求商品详情数据的函数
+import request from "network/detail";
+
+// 引入混入文件
+import Mixin from "common/mixin";
+
+// 引入辅助函数
+import { mapActions } from "vuex";
+
+export default {
+  name: "Detail",
+  data() {
+    return {
+      // 商品的id
+      id: "",
+
+      // 请求到的商品详情的轮播图数据
+      topImages: [],
+
+      // 商品标题简单介绍里的数据
+      goods: {},
+
+      // 商品店家的信息
+      shop: {},
+
+      // 商品具体信息及穿着展示图片信息
+      detailInfo: {},
+
+      // 商品尺寸参数等信息
+      paramInfo: {},
+
+      // 商品评论相关信息
+      commentInfo: {},
+
+      // 更多商品推荐信息
+      recommendGoods: [],
+
+      // 商品详情页的导航栏里各个主题的高度
+      themeTopYs: [],
+
+      // 记录当前顶部导航栏的主题
+      currIndex: 0,
+    };
+  },
+
+  mixins: [Mixin.backTopMixin],
+
+  components: {
+    DetailNavBar,
+    DetailSwiper,
+    DetailBaseInfo,
+    DetailShopInfo,
+    Scroll,
+    DetailGoodsInfo,
+    DetailParamInfo,
+    DetailCommentInfo,
+    DetailRecommendInfo,
+    DetailBottomBar,
+  },
+
+  created() {
+    // 请求商品的信息的数据
+    this._getDetaileData();
+
+    // 请求更多商品推荐的数据
+    this._getRcommendData();
+  },
+
+  methods: {
+    // 映射store里的actions中的函数
+    ...mapActions(["getGoodsInfo"]),
+
+    // 当轮播图图片加载回来让better-scroll对象重新获取content的高度
+    detailSwiperImageLoaded() {
+      this.$refs.scroll.refresh();
+
+      // 获取顶部导航栏各主题的高度
       this.themeTopYs = [];
       this.themeTopYs.push(0);
       this.themeTopYs.push(this.$refs.param.$el.offsetTop);
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
       this.themeTopYs.push(Number.MAX_VALUE);
-      // console.log(this.themeTopYs);
     },
-    destroyed() {
-      this.$bus.$off('itemImgLoad', this.itemImgListener);
-    },
-    methods: {
-      ...mapActions(['addCart']),
-      imageLoad() {
-        this.$refs.scroll.refresh()
-      },
-      titleCilck(index) {
-        console.log(index);
-        this.$refs.scroll.scrollTo(0, -this.themeTopYs[index],200)
-      },
-      contentScroll(position) {
-        // 1.获取y值
-        const positionY = -position.y
-        // 2. 使用positionY和主题中的的值进行对比，来决定当前应该显示哪一个index
-        let length = this.themeTopYs.length;
-        for(let i = 0; i < length-1; i++) {
-          if(this.currentIndex !== i && (positionY >= this.themeTopYs[i] && positionY <
-          this.themeTopYs[i+1])) {
-            this.currentIndex = i;
-            this.$refs.nav.currentIndex = this.currentIndex
+
+    // 实时获取页面滚动位置
+    contentScroll(position) {
+      let y = -position.y;
+
+      // 回到顶部的小图标
+      this.showBackTopImage(y);
+
+      // 遍历各主题的高度并
+      for (let i = 0; i < this.themeTopYs.length - 1; i++) {
+        // 对频繁的高度判断进行防抖
+        if (this.currIndex != i) {
+          // 判断页面滚动的高度是否超过
+          if (y >= this.themeTopYs[i] && y < this.themeTopYs[i + 1]) {
+            this.currIndex = i;
+
+            // 修改导航栏里的主题索引
+            this.$refs.detailNavBar.currIndex = i;
           }
-          // if(this.currentIndex !== i && ((i < length - 1 && positionY >= this.themeTopYs[i]
-          // && positionY < this.themeTopYs[i+1]) || (i === length - 1 && positionY >
-          // this.themeTopYs[i]))) {
-          //   this.currentIndex = i;
-          //   console.log(this.currentIndex);
-          //   this.$refs.nav.currentIndex = this.currentIndex
-          // }
-
         }
-        // 3. 判断BackTop是否显示回到顶部
-        this.listenshoBackTop(position)
-      },
-      addToCart() {
-        // 1.获取购物车需要展示的信息
-        const product = {}
-        // 调用topImages: []数组里面的图片
-        product.image = this.topImages[0];
-        // 调用 goods: {}对象里面的文字
-        product.title = this.goods.title;
-        // 调用 goods: {}对象里面的描述信息
-        product.desc = this.goods.desc;
-        // 调用 goods: {}对象里面的价格,因为商品价格是个区间，所以将商品价格不能写死。
-        // 需要在goods里面将数据换成固定的
-        product.price = this.goods.realPrice;
-        // 商品的iid也要传到购物车里面，因为Iid是商品的唯一标识，
-        product.iid = this.iid;
-
-        // 2.将商品添加到购物车里面
-        // this.$store.commit('addCart',product)
-        this.addCart(product).then(res => {
-          this.$toast.show(res)
-        })
-        // this.$store.dispatch('addCart',product).then(res => {
-        //       console.log(res);
-        // })
       }
-    }
-  }
+    },
+
+    // 加入购物车发来的点击事件
+    toCartGoodInfo() {
+      // 获取购物车需要展示的信息
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.realPrice = this.goods.realPrice;
+      product.id = this.id;
+
+      // 将数据发送到vuex状态管理对象中
+      // this.$store.dispatch('getGoodsInfo', product);
+      this.getGoodsInfo(product).then((res) => {
+        this.$toast.show("加入购物车成功~~", 2000);
+      });
+    },
+
+    // 商品详情页的头部导航栏组件发送来点击事件
+    detailNavBarClick(index) {
+      // 让页面根据传来的索引滚动到相应位置
+      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 1000);
+    },
+
+    // 请求商品的信息
+    _getDetaileData() {
+      this.id = this.$route.query.iid;
+      // 拿到点击到的商品的id，发送请求
+      request.getDetaile(this.id).then((res) => {
+        const data = res.result;
+
+        // 轮播图数据
+        this.topImages = data.itemInfo.topImages;
+
+        // 商品介绍的数据
+        this.goods = new request.GoodInfo(
+          data.itemInfo,
+          data.columns,
+          data.shopInfo.services
+        );
+
+        // 商品店家的信息数据
+        this.shop = new request.Shop(data.shopInfo);
+
+        // 商品具体信息及穿着展示图片数据
+        this.detailInfo = data.detailInfo;
+
+        // 商品尺码等数据
+        this.paramInfo = new request.GoodsParam(
+          data.itemParams.info,
+          data.itemParams.rule
+        );
+
+        // 商品评论数据
+        this.commentInfo = data.rate.list[0];
+      });
+    },
+
+    // 请求更多商品推荐数据
+    _getRcommendData() {
+      request.getRecommend().then((res) => {
+        this.recommendGoods = res.data.list;
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
-  #detail {
-    position: relative;
-    z-index: 9;
-    background-color: #fff;
-    height: 100vh;
-  }
+#detail {
+  position: relative;
+  height: 100vh;
+  z-index: 9;
+  background-color: #fff;
+}
+.detail-nav-bar {
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+}
 
-  .detail-nav {
-    position: relative;
-    z-index: 9;
-    background-color: #fff;
-  }
-
-  .content {
-    height: calc(100% - 44px);
-  }
+.detail-wrapper-scroll {
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  right: 0px;
+  left: 0px;
+  overflow: hidden;
+}
 </style>

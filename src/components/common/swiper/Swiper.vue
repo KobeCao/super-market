@@ -17,18 +17,26 @@
 	export default {
 		name: "Swiper",
     props: {
+
+      // 图片轮播的时间间隔
       interval: {
 		    type: Number,
         default: 3000
       },
+
+      // 每张图片轮播的时间
       animDuration: {
 		    type: Number,
         default: 300
       },
+
+      // 点击轮播图时，下一张图片移动的距离与屏幕的宽度比
       moveRatio: {
         type: Number,
         default: 0.25
       },
+
+      // 控制图片下的小圆点是否展示
       showIndicator: {
         type: Boolean,
         default: true
@@ -50,7 +58,7 @@
 
         // 2.开启定时器
         this.startTimer();
-      }, 200)
+      }, 3000)
     },
     methods: {
 		  /**
@@ -84,8 +92,8 @@
         this.scrolling = false
       },
 
-      /**
-       * 校验正确的位置
+      /*
+        校验正确的位置
        */
       checkPosition: function () {
         window.setTimeout(() => {

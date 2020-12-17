@@ -1,17 +1,14 @@
-// 导入常量
-import {
-  ADD_COUNTER,
-  ADD_T0_CART
-} from './mutation-types'
-
+import {ADD_COUNT, ADD_TO_CART} from './mutation_types'
 export default {
-  // mutations唯一的目的就是修改state中状态，
-  // mutations中的每个方法尽可能完成的事件比较单一一点
-  [ADD_COUNTER](state, payload) {
-    payload.count++
+  [ADD_TO_CART] (state, payload) {
+    // 定义该商品的数量和在购物车中默认选中
+    payload.count = 1;
+    payload.check = true;
+  // 没有相同的数据就添加商品
+  state.shoppingCartGoodsInfo.push(payload);
   },
-  [ADD_T0_CART](state, payload) {
-    payload.checked = true
-    state.cartList.push(payload)
+  [ADD_COUNT] (state, payload) {
+    // 有相同的数据就让在context.shoppingCartGoodsInfo找到的商品数量加一
+    payload.count++;
   }
 }

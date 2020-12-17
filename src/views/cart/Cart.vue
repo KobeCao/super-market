@@ -1,49 +1,63 @@
 <template>
-  <div class="cart">
-    <!-- 导航界面 -->
-    <nav-bar class="nav-bar">
+  <div id="cart">
+
+    <!-- 购物车导航栏 -->
+    <nav-bar class="cart-nav-bar">
       <div slot="center">购物车({{length}})</div>
     </nav-bar>
-    <!-- 商品的列表 -->
+
+
+    <!-- 商品列表 -->
     <cart-list></cart-list>
-    <!-- 底部的汇总 -->
+
+
+
+    <!-- 底部计算选中商品的总价格 -->
     <cart-bottom-bar></cart-bottom-bar>
   </div>
+    
+  
 </template>
 
 <script>
-// 导入导航栏组件
-import NavBar from 'components/common/navbar/NavBar';
-// 导入子组件CartList
-import CartList from './childComps/CartList';
-// 导入底部工具栏组件
-import CartBottomBar from './childComps/CartBottomBar';
-// 导入vuex模块中的mapGetters方法
-import { mapGetters } from 'vuex'
-export default {
-  name: "Cart",
-  components: {
-    NavBar,
-    CartList,
-    CartBottomBar
-  },
-  computed: {
-    //两种语法
-    // ...mapGetters(['cartLength','cartList'])
-    ...mapGetters({
-      length: 'cartLength',
-    })
+
+  import NavBar from 'components/common/navbar/NavBar'
+  import CartList from './childComps/CartList'
+  import CartBottomBar from './childComps/CartBottomBar'
+
+  // vuex里定义的一个辅助函数，将 store 中的 getter 映射到局部计算属性（computed）中
+  import {mapGetters} from 'vuex'
+
+  export default {
+    data () {
+      return {
+
+      }
+    },
+    components: {
+      NavBar,
+      CartList,
+      CartBottomBar
+    },
+    computed: {
+
+      // 将store里的getters中定义的函数展开到computed对象中
+      ...mapGetters({
+        length:'getGoodsNumber',
+      })
+    }
   }
-}
 </script>
 
 <style scoped>
-  .cart {
-    height: 100vh;
-  }
-  .nav-bar {
-    background-color: var(--color-tint);
+
+
+  .cart-nav-bar{
+    font-size: 20px;
+    font-weight: 600;
+    font-family: '宋体';
     color: #fff;
-    font-weight: 700;
+    background-color: var(--color-tint);
   }
+
 </style>

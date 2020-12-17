@@ -1,19 +1,26 @@
-// 导入request.js
-import {request} from "./request"
+import request from './request'
 
-// 因为首页数据可能会有多个请求，就可以根据下列方式进行多个封装，将这些请求放入一个单独的文件里面，进行统一的管理。
-export function getHomeMultidata() {
-  return request ({
-    url: './home/multidata'
+// 封装请求轮播图和图片导航部分数据函数
+const getHomeMultidata = () => {
+  return request({
+    url: '/home/multidata',
   })
 }
 
-export function getHomeGoods(type, page) {
+// 封装请求选项卡里的数据函数（get请求，需要带参数：选项卡里的类型，和页码）
+const getHomeGoods = (type, page) => {
   return request({
-    url: '/home/data',
-    params: {
+    url: 'home/data',
+    params:{
       type,
-      page
+      page,
     }
   })
+}
+
+
+
+export default {
+  getHomeMultidata,
+  getHomeGoods
 }

@@ -1,57 +1,54 @@
 <template>
-    <div v-if="Object.keys(commentInfo).length !== 0" class="comment-info">
-      <div class="info-header">
-        <div class="header-title">用户评价</div>
-        <div class="header-more" >
-          更多
-          <i class="arrow-right"></i>
-        </div>
-      </div>
-      <!-- 用户头像和昵称 -->
-      <div class="info-user">
-        <img :src="commentInfo.user.avatar" alt="">
-        <span>{{commentInfo.user.uname}}</span>
-      </div>
 
-      <div class="info-detail">
-        <!-- 用户评价的内容 -->
-        <p>{{commentInfo.content}}</p>
-        <div class="info-other">
-          <!-- 用户评论时间和衣服尺码颜色 -->
-          <span class="date">{{commentInfo.created |  showDate}}</span>
-          <span>{{commentInfo.style}}</span>
-        </div>
-        <!-- 用户追加的图片 -->
-        <div class="info-imgs">
-          <img :src="item" v-for="(item, index) in commentInfo.images" :key="index">
-        </div>
+  <!-- 商品评论 -->
+  <div class="comment-info" v-if="Object.keys(commentInfo).length != 0">
+
+    <div class="header-info">
+      <div class=title>用户评价</div>
+      <div class="more">更多&gt;&gt;</div>
+    </div>
+
+    <div class="user-info">
+      <img :src="commentInfo.user.avatar" alt="">
+      <span>{{commentInfo.user.uname}}</span>
+    </div>
+
+    <div class="content-info">
+      <p>{{commentInfo.content}}</p>
+      <div class="buy-info">
+        <span class="time">{{commentInfo.created | showDate}}</span>
+        <span>{{commentInfo.style}}</span>
       </div>
     </div>
+
+    <div class="imgs-info">
+      <img :src="item" v-for="(item, index) in commentInfo.images" :key="index" alt="">
+    </div>
+  </div>
 </template>
 
 <script>
-import { formatDate } from 'common/utils'
+
+  // 引入自己的工具方法
+  import Tools from 'common/tools.js'
 
   export default {
-		name: "DetailCommentInfo",
     props: {
-		  commentInfo: {
+      commentInfo: {
         type: Object,
-        default() {
+        defaule () {
           return {}
         }
       }
     },
-    filters: {
-      showDate(value) {
-        // 1.将时间戳转换成对象
-        const date = new Date(value * 1000)
-        // 2. 将date进行格式化
-        return formatDate(date,'yyyy/MM/dd hh:mm:ss')
-
+    filters:{
+       showDate (value) {
+        let date = new Date(value*1000);
+        return Tools.formatDate(date, 'yyyy--MM--dd');
       }
     }
-	}
+    
+  }
 </script>
 
 <style scoped>
@@ -61,67 +58,66 @@ import { formatDate } from 'common/utils'
     border-bottom: 5px solid #f2f5f8;
   }
 
-  .info-header {
+  .header-info {
     height: 50px;
     line-height: 50px;
     border-bottom: 1px solid rgba(0,0,0,.1);
   }
 
-  .header-title {
+  .title {
     float: left;
     font-size: 15px;
   }
 
-  .header-more {
+  .more {
     float: right;
     margin-right: 10px;
     font-size: 13px;
+    color: #f40;
   }
-
-  .info-user {
+  .user-info {
     padding: 10px 0 5px;
   }
 
-  .info-user img {
+  .user-info img {
     width: 42px;
     height: 42px;
     border-radius: 50%;
   }
 
-  .info-user span {
+  .user-info span {
     position: relative;
     font-size: 15px;
     top: -15px;
     margin-left: 10px;
   }
 
-  .info-detail {
+  .content-info {
     padding: 0 5px 15px;
   }
 
-  .info-detail p {
+  .content-info p {
     font-size: 14px;
-    color: #777;
     line-height: 1.5;
   }
 
-  .info-detail .info-other {
+  .content-info .buy-info {
     font-size: 12px;
     color: #999;
     margin-top: 10px;
   }
 
-  .info-other .date {
-    margin-right: 8px;
+  .buy-info .time {
+    margin-right: 60px;
   }
 
-  .info-imgs {
+  .imgs-info {
     margin-top: 10px;
   }
 
-  .info-imgs img {
+  .imgs-info img {
     width: 70px;
-    height: 70px;
     margin-right: 5px;
+    vertical-align: top;
   }
 </style>

@@ -1,35 +1,39 @@
 <template>
-  <div class="param-info" v-if="Object.keys(paramInfo).length !== 0">
-    <table v-for="(table, index) in paramInfo.sizes"
-           class="info-size" :key="index">
+  <div class="param-info" v-if="Object.keys(paramInfo).length != 0">
+
+    <!-- 商品尺码相关 -->
+    <table class="info-size" v-for="(table, index) in paramInfo.sizes" :key="index">
       <tr v-for="(tr, indey) in table" :key="indey">
         <td v-for="(td, indez) in tr" :key="indez">{{td}}</td>
       </tr>
     </table>
+
+    <!-- 商品材质面料产地相关 -->
     <table class="info-param">
-      <tr v-for="(info, index) in paramInfo.infos" :key="index">
-        <td class="info-param-key">{{info.key}}</td>
-        <td class="param-value">{{info.value}}</td>
+      <tr v-for="(info,index) in paramInfo.infos" :key="index">
+        <td class="info-param-key">{{info.key}}：</td>
+        <td class="info-param-value">{{info.value}}</td>
       </tr>
     </table>
-    <div class="info-img" v-if="paramInfo.image.length !== 0">
-      <img :src="paramInfo.image" alt="">
-    </div>
+
+    <!-- 图片相关 -->
+    <div v-if="paramInfo.images" class="info-img"><img :src="paramInfo.images" alt=""></div>
   </div>
+
 </template>
 
 <script>
-	export default {
-		name: "DetailParamInfo",
+  export default {
     props: {
-		  paramInfo: {
+      paramInfo: {
         type: Object,
-        dafault() {
+        default () {
           return {}
         }
       }
     }
-	}
+    
+  }
 </script>
 
 <style scoped>
@@ -42,6 +46,7 @@
   .param-info table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 10px;
   }
 
   .param-info table tr {
@@ -49,23 +54,25 @@
   }
 
   .param-info table tr td {
-    border-bottom: 1px solid rgba(100,100,100,.1);
+    border: 1px solid rgba(100,100,100,.1);
+     text-align: center;
   }
 
   .info-param-key {
     /*当value的数据量比较大的时候, 会挤到key,所以给一个固定的宽度*/
-    width: 95px;
+    width: 60px;
   }
 
   .info-param {
     border-top: 1px solid rgba(0,0,0,.1);
   }
 
-  .param-value {
+  .info-param-value {
     color: #eb4868
   }
 
   .info-img img {
     width: 100%;
+    margin-top: 20px;
   }
 </style>
